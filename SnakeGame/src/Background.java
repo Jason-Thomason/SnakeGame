@@ -16,7 +16,7 @@ private int rColor = 0, gColor = 0, bColor = 0;
 	}
 	
 	public void render(Graphics g){
-		g.setColor(Color.black);
+		g.setColor(Color.white);
 		g.fillRect(0, 0, Window.width, Window.height);
 	}
 	

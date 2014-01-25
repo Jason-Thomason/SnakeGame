@@ -11,17 +11,16 @@ public class Snake {
 	public Snake(int x, int y){
 		this.x = x;
 		this.y = y;
-		System.out.println("Snake Added");
 	}
 	
 	public Snake(){
 		
 	}
 	
-	public Snake(Color c){
+	public Snake(Color c, int x, int y){
 		color = c;
-		this.x = 200;
-		this.y = 300;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public void tick(){

@@ -1,7 +1,4 @@
-/Background.class
-/Core.class
-/Fruit.class
-/HandlerClass.class
-/Snake.class
-/Window.class
-/World.class
+/HUD.class
+/FileHandler.class
+/Obstacle.class
+/MapHandler.class
