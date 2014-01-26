@@ -15,6 +15,7 @@ public class FileHandler {
 			file = new File("SnakeGameData.txt");
 			file.setReadOnly();
 			file.setWritable(true);
+			System.out.println("File opened");
 			
 			
 			if(!file.exists()) formatter = new Formatter(file);
@@ -45,13 +46,14 @@ public class FileHandler {
 	}
 	
 	public void writeFile(){
+		//System.out.println("Writing HighScore");
 		try {
 			formatter = new Formatter(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		formatter.format("HIGHSCORE %s", World.HIGHSCORE);
+		//System.out.println("HighScore of " + World.HIGHSCORE + " written");
 		file.setWritable(false);
 		formatter.close();
 	}

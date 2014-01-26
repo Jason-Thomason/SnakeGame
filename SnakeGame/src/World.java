@@ -21,19 +21,23 @@ public class World {
 	
 	
 	public World(){
-		newLevel();
+		nextLevel();
 	}
 	
 	
 	public void tick(){
 		background.tick();
-		manageSnake();
 		checkCollisions();
+		manageSnake();
 		if(fruit.spawned == false){
 			newFruit();
 		}
 		mh.tick();
 		HUD.tick();
+		if(!Core.GAME_IS_RUNNING){
+			fileHandler.writeFile();
+			fileHandler.closeFile();
+		}
 		
 		
 	}
@@ -108,6 +112,7 @@ public class World {
 	}
 	
 	public void checkCollisions(){
+		
 		if(snakeParts.get(0).getX() == fruit.x && snakeParts.get(0).getY() == fruit.y){
 			snakeParts.add(new Snake());
 			snakeParts.add(new Snake());
@@ -117,28 +122,24 @@ public class World {
 		}
 		if(snakeParts.get(0).getX() < 0 || snakeParts.get(0).getX() > 390 || snakeParts.get(0).getY() < 10 || snakeParts.get(0).getY() > 390){
 			Core.GAME_IS_RUNNING = false;
-			fileHandler.writeFile();
-			fileHandler.closeFile();
 			System.out.println("Collision with edge");
 		}
 		for(int i = 2; i < snakeParts.size(); i++){
 			if(snakeParts.get(0).getX() == snakeParts.get(i).getX() && snakeParts.get(0).getY() == snakeParts.get(i).getY() && snakeParts.size()>3){
 				Core.GAME_IS_RUNNING = false;
-				fileHandler.writeFile();
-				fileHandler.closeFile();
 				System.out.println("Collision with self");
 			}
 		}
 	}
 
-	public void newLevel(){
+	public void nextLevel(){
 		level++;
 		try {
 			mh.loadMap("Map" + level + ".txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		snakeParts.add(new Snake(Color.blue, mh.startingX, mh.startingY));
+		snakeParts.add(new Snake(Color.blue, MapHandler.startingX, MapHandler.startingY));
 		snakeParts.add(new Snake(200, 410));
 		snakeParts.add(new Snake(200, 520));
 		fileHandler.openFile();
