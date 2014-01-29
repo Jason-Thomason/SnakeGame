@@ -28,4 +28,9 @@ public class Window extends JFrame{
 		
 	}
 	
+	public void setSize(){
+		this.setSize(width, height);
+		this.setLocationRelativeTo(null);
+	}
+	
 }

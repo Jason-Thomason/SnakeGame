@@ -4,10 +4,6 @@ public class Obstacle {
 
 	private int x, y, width = 10, height = 10;
 	
-	public Obstacle(int x, int y){
-		this.x = x*10;
-		this.y = y*10;
-	}
 	
 	public void tick(){
 		
@@ -18,11 +14,8 @@ public class Obstacle {
 		g.fill3DRect(x, y, width, height, true);
 	}
 	
-	public void checkCollisions(){
-		if(this.x == World.headX && this.y == World.headY){
-			Core.GAME_IS_RUNNING = false;
-			System.out.println("Collision with Obstacle");
-		}
+	public void checkCollisions(int x, int y){
+
 	}
 	
 	public int getX(){

@@ -7,18 +7,19 @@ import java.util.ArrayList;
 
 public class MapHandler {
 
-	public static int startingX, startingY;
+	public static int snake1StartingX, snake1StartingY, snake2StartingX, snake2StartingY;
+	private int width, height;
 	
 	BufferedReader reader;
-	ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+	
 	
 	
 	
 	public void loadMap(String filename) throws IOException{
 		
 		ArrayList lines = new ArrayList();
-		int width = 0;
-	    int height = 0;
+		width = 0;
+	    height = 0;
 		
 		
 		reader = new BufferedReader(new FileReader(filename));
@@ -36,49 +37,40 @@ public class MapHandler {
 	            }
 	        }
 	        height = lines.size();
-	        for (int j = 0; j < 39; j++) {
+	        for (int j = 0; j < height; j++) {
 	            String line = (String) lines.get(j);
 	            for (int i = 0; i < width; i++) {
 	                if (i < line.length()) {
 	                    char ch = line.charAt(i);
 	                    if(ch == '1'){
-	                    	startingX = i*10;
-	                    	startingY = j*10;
+	                    	snake1StartingX = i*10;
+	                    	snake1StartingY = j*10;
+	                    	System.out.println("Snake 1 at " + i + " and " + j);
 	                    }
 	                    if(ch == '2'){
-	                    	obstacles.add(new Obstacle(i, j ));
-	                    	//System.out.println("Obstacle Created at " + i + " " + j);
+	                    	snake2StartingX = i*10;
+	                    	snake2StartingY = j*10;
+	                    }
+	                    if(ch == '3'){
+	                    	World.obstacles.add(new Wall(i, j));
+	                    }
+	                    if(ch == '4'){
+	                    	World.obstacles.add(new Spike(i, j));
 	                    }
 	                }
-
 	            }
+		        Window.width = this.width * 10;
+		        Window.height = this.height * 10;
 	        }
 	}
 	
 	
 	public void tick(){
-		for(int i = 0; i < obstacles.size(); i++){
-			obstacles.get(i).checkCollisions();
-		}
+		
 	}
 	
 	public void render(Graphics g){
-		for(int i = 0; i < obstacles.size(); i++){
-			obstacles.get(i).render(g);
-		}
-	}
-	
-	public boolean checkFruit(int x, int y){
-		boolean overlap = false;
-		for(Obstacle ob: obstacles){
-			if(ob.getX() == x && ob.getY() == y){
-				overlap = true;
-				break;
-			}else{
-				overlap = false;
-			}
-		}
-		return overlap;
+		
 	}
 	
 }

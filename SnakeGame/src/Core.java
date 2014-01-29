@@ -4,7 +4,7 @@ import java.awt.image.VolatileImage;
 
 public class Core implements Runnable{
 
-	World world = new World();
+	World world;
 	Window window = new Window();
 	
 	VolatileImage image;
@@ -14,21 +14,25 @@ public class Core implements Runnable{
 	public static boolean GAME_IS_RUNNING;
 	
 	private int loops;
-	private static int FPS = 15, MAX_FRAME_SKIP = 2, SKIP_TICKS = 1000/FPS;
+	private static int FPS = 13, MAX_FRAME_SKIP = 2, SKIP_TICKS = 1000/FPS;
 	private long CURRENT_TIME = System.currentTimeMillis();
+	
+	static Core core;
 
 	public static void main(String[] args){
-		new Core();
+		core = new Core();
 	}
 	
 	public Core(){
-		Thread t1 = new Thread(this);
-		t1.start();
+		newGame();
+		
 	}
 	
 		public void tick(){
 			timer++;
+			window.setSize();
 			world.tick();
+			
 		}
 		public void render(Graphics g){
 			world.render(g);
@@ -62,4 +66,9 @@ public class Core implements Runnable{
 		
 	}
 
+		public void newGame(){
+			world = new World();
+			Thread t1 = new Thread(this);
+			t1.start();
+		}
 }

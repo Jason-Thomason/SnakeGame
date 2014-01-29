@@ -32,11 +32,8 @@ public class FileHandler {
 		while(scanner.hasNext()){
 			//System.out.println(scanner.next("HIGHSCORE"));
 			String line = scanner.nextLine();
-			System.out.println("Line: " + line);
 			if(line.contains("HIGHSCORE")) {
-				System.out.println("Highscore found.");
 				int number = Integer.valueOf(line.substring(line.indexOf(' ') + 1));
-				System.out.println("Highscore = " + number);
 				World.HIGHSCORE = number;
 			}
 		}
