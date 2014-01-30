@@ -21,7 +21,7 @@ public class Orange extends Fruit{
 		if(spawned = true){
 		g.setColor(Color.ORANGE);
 		//g.fill3DRect(x, y, width, height, true);
-		g.drawImage(Orange, x, y, width, height, null);
+		g.drawImage(Orange, this.x, this.y, width, height, null);
 		}
 	}
 	

@@ -21,9 +21,15 @@ public class HUD {
 		if(World.players == 2){
 			g.setFont(font);
 			g.setColor(Color.blue);
-			g.drawString("" + World.snakes.get(0).size, 15, 50);
+			g.drawString("" + World.snakes.get(0).lives, (Window.width / 2) - 20, 50);
+			if(World.snakes.get(0).dead && World.snakes.get(0).lives > 0){
+				g.drawString("" + (5 - (World.snakes.get(0).deathTimer / 10)), (Window.width / 2) - 20, 70);
+			}
 			g.setColor(Color.red);
-			g.drawString("" + World.snakes.get(1).size, Window.width - 20, 50);
+			g.drawString("" + World.snakes.get(1).lives, (Window.width / 2) + 20, 50);
+			if(World.snakes.get(1).dead && World.snakes.get(1).lives > 0){
+				g.drawString("" + (5 - (World.snakes.get(1).deathTimer / 10)), (Window.width / 2) + 20, 70);
+			}
 		}
 	}
 	

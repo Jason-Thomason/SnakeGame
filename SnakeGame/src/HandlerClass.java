@@ -12,32 +12,33 @@ public static boolean spacePressed = false;
 
 	@Override
 	public void keyPressed(KeyEvent event) {
-		if(event.getKeyCode() == KeyEvent.VK_LEFT && !rightPressed && !World.snake1Moved){
+		if(event.getKeyCode() == KeyEvent.VK_LEFT && !rightPressed && !World.snakes.get(0).moved){
 			leftPressed = true;
 			upPressed = false;
 			downPressed = false;
-			World.snake1Moved = true;
+			World.snakes.get(0).moved = true;
 		}	
-		if(event.getKeyCode() == KeyEvent.VK_RIGHT && !leftPressed && !World.snake1Moved){
+		if(event.getKeyCode() == KeyEvent.VK_RIGHT && !leftPressed && !World.snakes.get(0).moved){
 			rightPressed = true;
 			upPressed = false;
 			downPressed = false;
-			World.snake1Moved = true;
+			World.snakes.get(0).moved = true;
 		}
-		if(event.getKeyCode() == KeyEvent.VK_UP && !downPressed && !World.snake1Moved){
+		if(event.getKeyCode() == KeyEvent.VK_UP && !downPressed && !World.snakes.get(0).moved){
 			upPressed = true;
 			leftPressed = false;
 			rightPressed = false;
-			World.snake1Moved = true;
+			World.snakes.get(0).moved = true;
 		}
-		if(event.getKeyCode() == KeyEvent.VK_DOWN && !upPressed && !World.snake1Moved){
+		if(event.getKeyCode() == KeyEvent.VK_DOWN && !upPressed && !World.snakes.get(0).moved){
 			downPressed = true;
 			leftPressed = false;
 			rightPressed = false;
-			World.snake1Moved = true;
+			World.snakes.get(0).moved = true;
 		}
 		if(event.getKeyCode() == KeyEvent.VK_SPACE){
-			if(Core.GAME_IS_RUNNING == false){
+			if(Core.GAME_IS_RUNNING == false || World.snakesLeft <= 1){
+				Core.GAME_IS_RUNNING = false;
 				leftPressed = false;
 				rightPressed = false;
 				upPressed = false;
@@ -52,35 +53,51 @@ public static boolean spacePressed = false;
 				Core.main(null);
 			}
 		}
-		if(event.getKeyCode() == KeyEvent.VK_A && !dPressed && !World.snake2Moved){
+		if(event.getKeyCode() == KeyEvent.VK_A && !dPressed && !World.snakes.get(1).moved){
 			aPressed = true;
 			wPressed = false;
 			sPressed = false;
-			World.snake2Moved = true;
+			World.snakes.get(1).moved = true;
 		}	
-		if(event.getKeyCode() == KeyEvent.VK_D && !aPressed && !World.snake2Moved){
+		if(event.getKeyCode() == KeyEvent.VK_D && !aPressed && !World.snakes.get(1).moved){
 			dPressed = true;
 			wPressed = false;
 			sPressed = false;
-			World.snake2Moved = true;
+			World.snakes.get(1).moved = true;
 		}
-		if(event.getKeyCode() == KeyEvent.VK_W && !sPressed && !World.snake2Moved){
+		if(event.getKeyCode() == KeyEvent.VK_W && !sPressed && !World.snakes.get(1).moved){
 			wPressed = true;
 			aPressed = false;
 			dPressed = false;
-			World.snake2Moved = true;
+			World.snakes.get(1).moved = true;
 		}
-		if(event.getKeyCode() == KeyEvent.VK_S && !wPressed && !World.snake2Moved){
+		if(event.getKeyCode() == KeyEvent.VK_S && !wPressed && !World.snakes.get(1).moved){
 			sPressed = true;
 			aPressed = false;
 			dPressed = false;
-			World.snake2Moved = true;
+			World.snakes.get(1).moved = true;
+		}
+		if(event.getKeyCode() == KeyEvent.VK_ESCAPE){
+			System.exit(0);
 		}
 		
 	}
+	
+	public static void reset1(){
+		leftPressed = false;
+		rightPressed = false;
+		upPressed = false;
+		downPressed = false;
+	}
+	
+	public static void reset2(){
+		aPressed = false;
+		dPressed = false;
+		wPressed = false;
+		sPressed = false;
+	}
 
-	@Override
-	public void keyReleased(KeyEvent event) {
+		public void keyReleased(KeyEvent event) {
 		if(event.getKeyCode() == KeyEvent.VK_LEFT){
 			//leftPressed = false;
 		}	

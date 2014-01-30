@@ -16,10 +16,24 @@ public class Wall extends Obstacle{
 		g.fill3DRect(x, y, width, height, true);
 	}
 
-	public void checkCollisions(int x, int y){
-		if(this.x == x && this.y == y){
-			Core.GAME_IS_RUNNING = false;
-			System.out.println("Collision with Obstacle");
+	public void checkCollisions(int x, int y) {
+		if (this.x == x && this.y == y) {
+			for (int i = 0; i < World.snakes.size(); i++) {
+				if (World.snakes.get(i).snakeParts.size() > 0) {
+					if (this.x == World.snakes.get(i).snakeParts.get(0).getX()
+							&& this.y == World.snakes.get(i).snakeParts.get(0)
+									.getY()) {
+						for (int n = 0; n < 1 ; n++) {
+								for(int h = 0; h < World.snakes.get(i).size - 1; h++){
+									//Moves each part back one space
+									World.snakes.get(i).snakeParts.get(h).setX(World.snakes.get(i).snakeParts.get(h+1).getX());
+									World.snakes.get(i).snakeParts.get(h).setY(World.snakes.get(i).snakeParts.get(h+1).getY());
+								}
+								World.snakes.get(i).removePart();
+						}
+					}
+				}
+			}
 		}
 	}
 	

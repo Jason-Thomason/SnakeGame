@@ -12,9 +12,6 @@ public class Apple extends Fruit{
 		fruitType = "Apple";
 	}
 	
-	public void tick(){
-		
-	}
 	
 	public void render(Graphics g){
 		if(spawned = true){
