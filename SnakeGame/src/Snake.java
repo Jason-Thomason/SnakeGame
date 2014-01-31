@@ -8,20 +8,18 @@ public class Snake {
 	public int size = 0, lives = 2, deathTimer = 0;
 	public int startingX, startingY;
 	private static int width = 10, height = 10;
-	private Color color;
+	public Color color;
 
 	public boolean moved = false, dead = false;
 
 	ArrayList<Snake> snakeParts = new ArrayList<Snake>();
 
-	public Snake(int x, int y) {
-		size = 1;
-		this.x = x;
-		this.y = y;
+	public Snake() {
+
 	}
 
-	public Snake() {
-		
+	public Snake(Color c) {
+		this.color = c;
 	}
 
 	public Snake(Color c, int x, int y) {
@@ -32,14 +30,17 @@ public class Snake {
 		this.x = x;
 		this.y = y;
 		this.size = 3;
-		this.snakeParts.add(new Snake());
-		this.snakeParts.add(new Snake());
+		this.snakeParts.add(new Snake(color));
+		this.snakeParts.add(new Snake(color));
+		if (World.players == 1) {
+			lives = 0;
+		}
 	}
 
 	public void tick() {
 		// Makes sure that the the snake is the right length
 		if (snakeParts.size() < this.size) {
-			snakeParts.add(new Snake());
+			snakeParts.add(new Snake(color));
 		} else if (snakeParts.size() > this.size) {
 			snakeParts.remove(snakeParts.size() - 1);
 		}
@@ -62,7 +63,7 @@ public class Snake {
 
 	public void render(Graphics g) {
 		for (Snake s : snakeParts) {
-			g.setColor(color);
+			g.setColor(s.color);
 			g.fillOval(s.x, s.y, width, height);
 		}
 	}
@@ -72,11 +73,17 @@ public class Snake {
 		if (snakeParts.size() > 1) {
 			snakeParts.remove(snakeParts.size() - 1);
 			size--;
-		}else if(snakeParts.size() == 1){
+		} else if (snakeParts.size() == 1) {
 			dead = true;
 			snakeParts.remove(snakeParts.size() - 1);
 			size--;
 		}
+	}
+
+	public void addPart(Color c) {
+		// Adds a new part to the snake
+		snakeParts.add(new Snake(c));
+		size++;
 	}
 
 	public void addPart() {
@@ -87,14 +94,15 @@ public class Snake {
 
 	public void respawn() {
 		dead = false;
-		if(snakeParts.size() == 0 && lives > 0){
-			if(lives > 0){
-			snakeParts.add(new Snake(this.color, this.startingX, this.startingY));
-			size++;
+		if (snakeParts.size() == 0 && lives > 0) {
+			if (lives > 0) {
+				snakeParts.add(new Snake(this.color, this.startingX,
+						this.startingY));
+				size++;
 			}
 			deathTimer = 0;
 			lives--;
-			
+
 		}
 	}
 

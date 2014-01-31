@@ -1,8 +1,10 @@
-/HUD.class
-/FileHandler.class
-/Obstacle.class
-/MapHandler.class
 /Apple.class
+/Background.class
+/Core.class
+/FileHandler.class
+/Fruit.class
+/HUD.class
+/HandlerClass.class
+/MapHandler.class
+/Obstacle.class
 /Orange.class
-/Wall.class
-/Spike.class
