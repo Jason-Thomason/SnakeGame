@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class World {
 
-	public static int SCORE, HIGHSCORE, snakesLeft, level = 3, players = 6;
+	public static int SCORE, HIGHSCORE, snakesLeft, level = 1, players = 2;
 	public static boolean snake1Moved, snake2Moved;
 
 	static ArrayList<Snake> snakes;
@@ -118,7 +118,7 @@ public class World {
 			snakes.get(0).setYDirection(0);
 			snakes.get(0).setXDirection(0);
 		}
-		if (players > 1) {
+		if (players > 1 && snakes.get(1).human) {
 			if (HandlerClass.wPressed) {
 				snakes.get(1).setYDirection(-10);
 				snakes.get(1).setXDirection(0);
@@ -291,6 +291,10 @@ public class World {
 		for (int i = 0; i < players; i++) {
 			snakes.add(new Snake(colors[i], startingPositions[i][0],
 					startingPositions[i][1]));
+			//Sets first and second snake to human.
+			if(i <= 1){
+				snakes.get(i).human = true;
+			}
 		}
 		newFruit();
 	}

@@ -10,7 +10,7 @@ public class Snake {
 	private static int width = 10, height = 10;
 	public Color color;
 
-	public boolean moved = false, dead = false;
+	public boolean moved = false, dead = false, human = false;
 
 	ArrayList<Snake> snakeParts = new ArrayList<Snake>();
 
@@ -94,7 +94,7 @@ public class Snake {
 
 	public void respawn() {
 		dead = false;
-		if (snakeParts.size() == 0 && lives > 0) {
+		if (snakeParts.size() == 0) {
 			if (lives > 0) {
 				snakeParts.add(new Snake(this.color, this.startingX,
 						this.startingY));
