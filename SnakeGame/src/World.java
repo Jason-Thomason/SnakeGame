@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+/*
+ * 		BUGS
+ * -Snakes with no tail cannot pick up fruit
+ */
+
+
 public class World {
 
 	public static enum GameMode {
@@ -203,75 +209,53 @@ public class World {
 
 	public void checkCollisions() {
 		for (int s = 0; s < snakes.size(); s++) {
-			// Check obstacles
-			for (int o = 0; o < obstacles.size(); o++) {
-				if (snakes.get(s).size > 0) {
-					obstacles.get(o).checkCollisions(snakes.get(s));
+			Snake snakeBeingChecked1 = snakes.get(s);
+			if (snakeBeingChecked1.snakeParts.size() > 0) {
+				// Check obstacles
+				for (int o = 0; o < obstacles.size(); o++) {
+					if (snakes.get(s).size > 0) {
+						obstacles.get(o).checkCollisions(snakes.get(s));
+					}
 				}
-			}
-			// Check fruit
-			for (int i = 0; i < fruits.size(); i++) {
-				if (snakes.get(s).size > 0) {
-					if (snakes.get(s).x == fruits.get(i).x
-							&& snakes.get(s).y == fruits.get(i).y) {
-						for (int k = 0; k < fruits.get(i).getValue(); k++) {
-							snakes.get(s).addPart(snakes.get(s).color);
-						}
-						fruits.get(i).spawned = false;
-						fruits.remove(i);
-						if (gameMode == GameMode.CLASSIC) {
-							SCORE += snakes.get(s).size;
+				// Check fruit
+				for (int i = 0; i < fruits.size(); i++) {
+
+					if (snakeBeingChecked1.snakeParts.get(0).x == fruits.get(i).x
+							&& snakeBeingChecked1.snakeParts.get(0).y == fruits
+									.get(i).y) {
+						if (fruits.get(i).fruitType.equals("Apple")) {
+							snakeBeingChecked1
+									.addPart(snakeBeingChecked1.color);
+							snakeBeingChecked1.addPart();
+							snakeBeingChecked1.addPart();
+							fruits.get(i).spawned = false;
+							fruits.remove(i);
+							if (players == 1) {
+								SCORE += snakeBeingChecked1.size;
+							}
+						} else if (fruits.get(i).fruitType.equals("Orange")) {
+							snakeBeingChecked1
+									.addPart(snakeBeingChecked1.color);
+							snakeBeingChecked1.addPart();
+							snakeBeingChecked1.addPart();
+							snakeBeingChecked1.addPart();
+							snakeBeingChecked1.addPart();
+							snakeBeingChecked1.addPart();
+							fruits.get(i).spawned = false;
+							fruits.remove(i);
+							if (players == 1) {
+								SCORE += snakeBeingChecked1.size;
+							}
 						}
 					}
 				}
-			}
-			// Check collisions between snakes in triple loop (Snake s vs
-			// Snake q at Snake q's part p)
-			for (int q = 0; q < snakes.size(); q++) {
-				if (q != s) {
-					// Check head on collisions
-					if (snakes.get(s).x == snakes.get(q).x
-							&& snakes.get(s).y == snakes.get(q).y) {
-						if (gameMode == GameMode.BATTLE) {
-							if (snakes.get(s).size < snakes.get(q).size) {
-								int z = snakes.get(s).size;
-								for (int n = 0; n < z; n++) {
-									snakes.get(q).addPart(snakes.get(s).color);
-									snakes.get(s).removePart();
-								}
-							} else if (snakes.get(s).size > snakes.get(q).size) {
-								int z = snakes.get(q).size;
-								for (int n = 0; n < z; n++) {
-									snakes.get(s).addPart(snakes.get(q).color);
-									snakes.get(q).removePart();
-								}
-							} else if (snakes.get(s).size == snakes.get(q).size - 1) {
-								int z = snakes.get(s).size - 0;
-								for (int n = 0; n < z; n++) {
-									snakes.get(s).removePart();
-									snakes.get(q).removePart();
-								}
-							}
-						} else {
-							for (SnakePart sp : snakes.get(s).snakeParts) {
-								obstacles.add(new DeadSnakePart(sp));
-							}
-							snakes.get(s).dead = true;
-							for (SnakePart sp : snakes.get(q).snakeParts) {
-								obstacles.add(new DeadSnakePart(sp));
-							}
-							snakes.get(q).dead = true;
-						}
-
-					}// Checks "glitched" head on collision
-					if (snakes.get(s).size > 1 && snakes.get(q).size > 1) {
-						if (snakes.get(s).x == snakes.get(q).snakeParts.get(0).x
-								&& snakes.get(s).y == snakes.get(q).snakeParts
-										.get(0).y
-								&& snakes.get(q).x == snakes.get(s).snakeParts
-										.get(0).x
-								&& snakes.get(q).y == snakes.get(s).snakeParts
-										.get(0).y) {
+				// Check collisions between snakes in triple loop (Snake s vs
+				// Snake q at Snake q's part p)
+				for (int q = 0; q < snakes.size(); q++) {
+					if (q != s) {
+						// Check head on collisions
+						if (snakes.get(s).x == snakes.get(q).x
+								&& snakes.get(s).y == snakes.get(q).y) {
 							if (gameMode == GameMode.BATTLE) {
 								if (snakes.get(s).size < snakes.get(q).size) {
 									int z = snakes.get(s).size;
@@ -287,15 +271,14 @@ public class World {
 												snakes.get(q).color);
 										snakes.get(q).removePart();
 									}
-								} else if (snakes.get(s).size == snakes.get(q).size) {
-									int z = snakes.get(s).size - 1;
+								} else if (snakes.get(s).size == snakes.get(q).size - 1) {
+									int z = snakes.get(s).size - 0;
 									for (int n = 0; n < z; n++) {
 										snakes.get(s).removePart();
 										snakes.get(q).removePart();
 									}
 								}
 							} else {
-
 								for (SnakePart sp : snakes.get(s).snakeParts) {
 									obstacles.add(new DeadSnakePart(sp));
 								}
@@ -306,62 +289,114 @@ public class World {
 								snakes.get(q).dead = true;
 							}
 
-						}
-					}
-					for (int p = 0; p < snakes.get(q).size - 1; p++) {
-						if (snakes.get(s).size > 0) {
+						}// Checks "glitched" head on collision
+						if (snakes.get(s).size > 1 && snakes.get(q).size > 1) {
 							if (snakes.get(s).x == snakes.get(q).snakeParts
-									.get(p).x
+									.get(0).x
 									&& snakes.get(s).y == snakes.get(q).snakeParts
-											.get(p).y) {
+											.get(0).y
+									&& snakes.get(q).x == snakes.get(s).snakeParts
+											.get(0).x
+									&& snakes.get(q).y == snakes.get(s).snakeParts
+											.get(0).y) {
 								if (gameMode == GameMode.BATTLE) {
-									if (snakes.get(s).size > snakes.get(q).size
-											- p) {
-										int z = snakes.get(q).snakeParts.size()
-												- p;
+									if (snakes.get(s).size < snakes.get(q).size) {
+										int z = snakes.get(s).size;
+										for (int n = 0; n < z; n++) {
+											snakes.get(q).addPart(
+													snakes.get(s).color);
+											snakes.get(s).removePart();
+										}
+									} else if (snakes.get(s).size > snakes
+											.get(q).size) {
+										int z = snakes.get(q).size;
 										for (int n = 0; n < z; n++) {
 											snakes.get(s).addPart(
-													snakes.get(q).snakeParts
-															.get(p).color);
+													snakes.get(q).color);
 											snakes.get(q).removePart();
 										}
-										// If snake s is smaller than snake
-										// q's
-										// tail at point of collision...
-									} else if (snakes.get(s).size < snakes
-											.get(q).snakeParts.size() - p) {
-										int z = snakes.get(q).size;
-										for (int u = 0; u < z; u++) {
+									} else if (snakes.get(s).size == snakes
+											.get(q).size) {
+										int z = snakes.get(s).size - 1;
+										for (int n = 0; n < z; n++) {
 											snakes.get(s).removePart();
+											snakes.get(q).removePart();
 										}
 									}
 								} else {
+
 									for (SnakePart sp : snakes.get(s).snakeParts) {
 										obstacles.add(new DeadSnakePart(sp));
 									}
 									snakes.get(s).dead = true;
+									for (SnakePart sp : snakes.get(q).snakeParts) {
+										obstacles.add(new DeadSnakePart(sp));
+									}
+									snakes.get(q).dead = true;
 								}
-							}
 
+							}
+						}
+						for (int p = 0; p < snakes.get(q).size - 1; p++) {
+							if (snakes.get(s).size > 0) {
+								if (snakes.get(s).x == snakes.get(q).snakeParts
+										.get(p).x
+										&& snakes.get(s).y == snakes.get(q).snakeParts
+												.get(p).y) {
+									if (gameMode == GameMode.BATTLE) {
+										if (snakes.get(s).size > snakes.get(q).size
+												- p) {
+											int z = snakes.get(q).snakeParts
+													.size() - p;
+											for (int n = 0; n < z; n++) {
+												snakes.get(s)
+														.addPart(
+																snakes.get(q).snakeParts
+																		.get(p).color);
+												snakes.get(q).removePart();
+											}
+											// If snake s is smaller than snake
+											// q's
+											// tail at point of collision...
+										} else if (snakes.get(s).size < snakes
+												.get(q).snakeParts.size() - p) {
+											int z = snakes.get(q).size;
+											for (int u = 0; u < z; u++) {
+												snakes.get(s).removePart();
+											}
+										}
+									} else {
+										for (SnakePart sp : snakes.get(s).snakeParts) {
+											obstacles
+													.add(new DeadSnakePart(sp));
+										}
+										snakes.get(s).dead = true;
+									}
+								}
+
+							}
 						}
 					}
 				}
-			}
-			// Checks for self collision of snake s at part p
-			for (int p = 2; p < snakes.get(s).snakeParts.size() - 1; p++) {
-				if (snakes.get(s).x == snakes.get(s).snakeParts.get(p).x
-						&& snakes.get(s).y == snakes.get(s).snakeParts.get(p).y) {
-					// Declare the length of the tail before loop so it only
-					// checks once
-					int z = snakes.get(s).size - p;
-					for (int n = 0; n < z; n++) {
-						if (gameMode != GameMode.BATTLE) {
-							for (SnakePart sp : snakes.get(s).snakeParts) {
-								obstacles.add(new DeadSnakePart(sp));
+				// Checks for self collision of snake s at part p
+
+				for (int p = 3; p < snakes.get(s).snakeParts.size() - 1; p++) {
+					if (snakes.get(s).x == snakes.get(s).snakeParts.get(p).x
+							&& snakes.get(s).y == snakes.get(s).snakeParts
+									.get(p).y) {
+						// Declare the length of the tail before loop so it only
+						// checks once
+						int z = snakes.get(s).size - p;
+						for (int n = 0; n < z; n++) {
+							if (gameMode != GameMode.BATTLE) {
+								for (SnakePart sp : snakes.get(s).snakeParts) {
+									obstacles.add(new DeadSnakePart(sp));
+								}
+								snakes.get(s).dead = true;
+							} else {
+								snakes.get(s).removePart();
+
 							}
-							snakes.get(s).dead = true;
-						} else {
-							snakes.get(s).removePart();
 						}
 					}
 				}
@@ -396,8 +431,10 @@ public class World {
 		for (int i = 0; i < totalSnakes; i++) {
 			snakes.add(new Snake(colors[i], startingPositions[i][0],
 					startingPositions[i][1]));
+
 			// Sets as many snakes human as there are players
 			if (i < players) {
+
 				snakes.get(i).human = true;
 			} else if (i >= players) {
 				// Gives random direction for AI Snakes
