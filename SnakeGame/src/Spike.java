@@ -23,7 +23,7 @@ public class Spike extends Obstacle {
 	public void checkCollisions(Snake s) {
 		// Checks for collision
 		if (this.x == s.x && this.y == s.y) {
-			int z = (int) Math.floor(s.size / 2);
+			int z = (int) Math.floor(s.totalSize / 2);
 			for (int n = 0; n < z; n++){
 				s.removePart();
 			}

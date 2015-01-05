@@ -8,7 +8,7 @@ public class Snake {
 	Random rand = new Random();
 
 	public int x, y, xDirection, yDirection;
-	public int size = 0, lives = 2, deathTimer = 0, AIMove = 0, AITick = 0,
+	public int totalSize = 0, lives = 2, deathTimer = 0, AIMove = 0, AITick = 0,
 			AITickMax;
 	public int startingX, startingY;
 	private static int width = 10, height = 10;
@@ -40,7 +40,7 @@ public class Snake {
 		this.startingY = y;
 		this.x = x;
 		this.y = y;
-		this.size = 3;
+		this.totalSize = 3;
 		// Sets random TickMax
 		if (!this.human) {
 			this.AITickMax = rand.nextInt(5) + 3;
@@ -58,15 +58,15 @@ public class Snake {
 
 	public void tick() {
 		// Kill snake if size reaches 0 or adjusts size if dead
-		if (size == 0 || dead == true) {
+		if (totalSize == 0 || dead == true) {
 			dead = true;
-			size = 0;
+			totalSize = 0;
 		}
 		// Makes sure that the the snake is the right length
-		while (snakeParts.size() < this.size - 1) {
+		while (snakeParts.size() < this.totalSize - 1) {
 			snakeParts.add(new SnakePart(color));
 		}
-		while (snakeParts.size() > this.size - 1 && snakeParts.size() > 0) {
+		while (snakeParts.size() > this.totalSize - 1 && snakeParts.size() > 0) {
 			snakeParts.remove(snakeParts.size() - 1);
 		}
 
@@ -89,7 +89,7 @@ public class Snake {
 			y += this.direction.getYDirection(direction);
 			if (World.gameMode == World.GameMode.TRON_INFINITE) {
 				this.snakeParts.add(new SnakePart(color));
-				this.size++;
+				this.totalSize++;
 			}
 
 		} catch (Exception e) {
@@ -111,19 +111,19 @@ public class Snake {
 
 	public void removePart() {
 		// Removes the last part of the snake
-		if (size > 1) {
+		if (totalSize > 1) {
 			snakeParts.remove(snakeParts.size() - 1);
-			size--;
-		} else if (size == 1 && !dead) {
+			totalSize--;
+		} else if (totalSize == 1 && !dead) {
 			dead = true;
-			size = 0;
+			totalSize = 0;
 		}
 	}
 
 	public void addPart(Color c) {
 		// Adds a new part to the snake
 		snakeParts.add(new SnakePart(c));
-		size++;
+		totalSize++;
 	}
 	
 	public void setDirections(){
@@ -241,7 +241,7 @@ public class Snake {
 	public void addPart() {
 		// Adds a new part to the snake
 		snakeParts.add(new SnakePart(this.color));
-		size++;
+		totalSize++;
 	}
 
 	public int getX() {

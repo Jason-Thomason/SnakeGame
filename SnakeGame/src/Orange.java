@@ -7,7 +7,7 @@ import javax.swing.ImageIcon;
 
 public class Orange extends Fruit{
 
-	Image Orange = new ImageIcon("Orange.png").getImage();
+	Image ImageOfOrange = new ImageIcon("Resources/Images/Orange.png").getImage();
 	
 	private static int value = 6;
 	
@@ -23,7 +23,7 @@ public class Orange extends Fruit{
 		if(spawned = true){
 		g.setColor(Color.ORANGE);
 		//g.fill3DRect(x, y, width, height, true);
-		g.drawImage(Orange, this.x, this.y, width, height, null);
+		g.drawImage(ImageOfOrange, this.x, this.y, width, height, null);
 		}
 	}
 	

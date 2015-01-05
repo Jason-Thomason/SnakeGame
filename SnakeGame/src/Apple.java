@@ -6,7 +6,7 @@ import javax.swing.ImageIcon;
 
 public class Apple extends Fruit{
 
-	Image apple = new ImageIcon("Cartoon Apple.png").getImage();
+	Image ImageOfApple = new ImageIcon("Resources/Images/Cartoon Apple.png").getImage();
 	
 	private static int value = 3;
 	
@@ -19,7 +19,7 @@ public class Apple extends Fruit{
 		if(spawned = true){
 		//g.setColor(Color.red);
 		//g.fill3DRect(x, y, width, height, true);
-			g.drawImage(apple, this.x, this.y, 10, 10, null);
+			g.drawImage(ImageOfApple, this.x, this.y, 10, 10, null);
 		}
 	}
 	

@@ -74,7 +74,7 @@ public class World {
 				while (s.snakeParts.size() > 0) {
 					// s.removePart();
 					s.snakeParts.remove(s.snakeParts.size() - 1);
-					s.size--;
+					s.totalSize--;
 				}
 			}
 
@@ -125,7 +125,7 @@ public class World {
 			}
 		}
 		for (int i = 0; i < snakes.size(); i++) {
-			if (snakes.get(i).dead == false && snakes.get(i).size > 0) {
+			if (snakes.get(i).dead == false && snakes.get(i).totalSize > 0) {
 				snakes.get(i).render(g);
 			}
 		}
@@ -213,7 +213,7 @@ public class World {
 			if (snakeBeingChecked1.snakeParts.size() > 0) {
 				// Check obstacles
 				for (int o = 0; o < obstacles.size(); o++) {
-					if (snakes.get(s).size > 0) {
+					if (snakes.get(s).totalSize > 0) {
 						obstacles.get(o).checkCollisions(snakes.get(s));
 					}
 				}
@@ -231,7 +231,7 @@ public class World {
 							fruits.get(i).spawned = false;
 							fruits.remove(i);
 							if (players == 1) {
-								SCORE += snakeBeingChecked1.size;
+								SCORE += snakeBeingChecked1.totalSize;
 							}
 						} else if (fruits.get(i).fruitType.equals("Orange")) {
 							snakeBeingChecked1
@@ -244,7 +244,7 @@ public class World {
 							fruits.get(i).spawned = false;
 							fruits.remove(i);
 							if (players == 1) {
-								SCORE += snakeBeingChecked1.size;
+								SCORE += snakeBeingChecked1.totalSize;
 							}
 						}
 					}
@@ -257,22 +257,22 @@ public class World {
 						if (snakes.get(s).x == snakes.get(q).x
 								&& snakes.get(s).y == snakes.get(q).y) {
 							if (gameMode == GameMode.BATTLE) {
-								if (snakes.get(s).size < snakes.get(q).size) {
-									int z = snakes.get(s).size;
+								if (snakes.get(s).totalSize < snakes.get(q).totalSize) {
+									int z = snakes.get(s).totalSize;
 									for (int n = 0; n < z; n++) {
 										snakes.get(q).addPart(
 												snakes.get(s).color);
 										snakes.get(s).removePart();
 									}
-								} else if (snakes.get(s).size > snakes.get(q).size) {
-									int z = snakes.get(q).size;
+								} else if (snakes.get(s).totalSize > snakes.get(q).totalSize) {
+									int z = snakes.get(q).totalSize;
 									for (int n = 0; n < z; n++) {
 										snakes.get(s).addPart(
 												snakes.get(q).color);
 										snakes.get(q).removePart();
 									}
-								} else if (snakes.get(s).size == snakes.get(q).size - 1) {
-									int z = snakes.get(s).size - 0;
+								} else if (snakes.get(s).totalSize == snakes.get(q).totalSize - 1) {
+									int z = snakes.get(s).totalSize - 0;
 									for (int n = 0; n < z; n++) {
 										snakes.get(s).removePart();
 										snakes.get(q).removePart();
@@ -290,7 +290,7 @@ public class World {
 							}
 
 						}// Checks "glitched" head on collision
-						if (snakes.get(s).size > 1 && snakes.get(q).size > 1) {
+						if (snakes.get(s).totalSize > 1 && snakes.get(q).totalSize > 1) {
 							if (snakes.get(s).x == snakes.get(q).snakeParts
 									.get(0).x
 									&& snakes.get(s).y == snakes.get(q).snakeParts
@@ -300,24 +300,24 @@ public class World {
 									&& snakes.get(q).y == snakes.get(s).snakeParts
 											.get(0).y) {
 								if (gameMode == GameMode.BATTLE) {
-									if (snakes.get(s).size < snakes.get(q).size) {
-										int z = snakes.get(s).size;
+									if (snakes.get(s).totalSize < snakes.get(q).totalSize) {
+										int z = snakes.get(s).totalSize;
 										for (int n = 0; n < z; n++) {
 											snakes.get(q).addPart(
 													snakes.get(s).color);
 											snakes.get(s).removePart();
 										}
-									} else if (snakes.get(s).size > snakes
-											.get(q).size) {
-										int z = snakes.get(q).size;
+									} else if (snakes.get(s).totalSize > snakes
+											.get(q).totalSize) {
+										int z = snakes.get(q).totalSize;
 										for (int n = 0; n < z; n++) {
 											snakes.get(s).addPart(
 													snakes.get(q).color);
 											snakes.get(q).removePart();
 										}
-									} else if (snakes.get(s).size == snakes
-											.get(q).size) {
-										int z = snakes.get(s).size - 1;
+									} else if (snakes.get(s).totalSize == snakes
+											.get(q).totalSize) {
+										int z = snakes.get(s).totalSize - 1;
 										for (int n = 0; n < z; n++) {
 											snakes.get(s).removePart();
 											snakes.get(q).removePart();
@@ -337,14 +337,14 @@ public class World {
 
 							}
 						}
-						for (int p = 0; p < snakes.get(q).size - 1; p++) {
-							if (snakes.get(s).size > 0) {
+						for (int p = 0; p < snakes.get(q).totalSize - 1; p++) {
+							if (snakes.get(s).totalSize > 0) {
 								if (snakes.get(s).x == snakes.get(q).snakeParts
 										.get(p).x
 										&& snakes.get(s).y == snakes.get(q).snakeParts
 												.get(p).y) {
 									if (gameMode == GameMode.BATTLE) {
-										if (snakes.get(s).size > snakes.get(q).size
+										if (snakes.get(s).totalSize > snakes.get(q).totalSize
 												- p) {
 											int z = snakes.get(q).snakeParts
 													.size() - p;
@@ -358,9 +358,9 @@ public class World {
 											// If snake s is smaller than snake
 											// q's
 											// tail at point of collision...
-										} else if (snakes.get(s).size < snakes
+										} else if (snakes.get(s).totalSize < snakes
 												.get(q).snakeParts.size() - p) {
-											int z = snakes.get(q).size;
+											int z = snakes.get(q).totalSize;
 											for (int u = 0; u < z; u++) {
 												snakes.get(s).removePart();
 											}
@@ -386,7 +386,7 @@ public class World {
 									.get(p).y) {
 						// Declare the length of the tail before loop so it only
 						// checks once
-						int z = snakes.get(s).size - p;
+						int z = snakes.get(s).totalSize - p;
 						for (int n = 0; n < z; n++) {
 							if (gameMode != GameMode.BATTLE) {
 								for (SnakePart sp : snakes.get(s).snakeParts) {
@@ -408,7 +408,7 @@ public class World {
 
 		Core.timer = 0;
 		try {
-			mh.loadMap("Map" + level + ".txt");
+			mh.loadMap("Resources/Maps/Map" + level + ".txt");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -487,7 +487,7 @@ public class World {
 		// Checks in front for obstacles
 		for (Obstacle o : obstacles) {
 			// Checks in front for obstacle
-			if (s.size > 0) {
+			if (s.totalSize > 0) {
 
 				if ((s.x + s.xDirection == o.getX() && s.y + s.yDirection == o
 						.getY())) {
@@ -552,10 +552,10 @@ public class World {
 		}
 		for (Snake q : snakes) {
 			if (q != s) {
-				for (int p = 0; p < q.size - 1; p++) {
+				for (int p = 0; p < q.totalSize - 1; p++) {
 					if (gameMode == GameMode.BATTLE) {
 						// Dodges other snake if it will die
-						if (s.size < q.size - p) {
+						if (s.totalSize < q.totalSize - p) {
 							if ((s.x + s.xDirection == q.snakeParts.get(p).x && s.y
 									+ s.yDirection == q.snakeParts.get(p).y)) {
 								int r = rand.nextInt(2);
@@ -565,13 +565,13 @@ public class World {
 									for (SnakePart sp : q.snakeParts) {
 										if (s.x - s.yDirection == sp.x
 												&& s.y + s.xDirection == sp.y
-												&& s.size < q.size
+												&& s.totalSize < q.totalSize
 														- q.snakeParts
 																.indexOf(sp)) {
 											turnLeft(s);
 											break;
 										} else if (sp == q.snakeParts
-												.get(q.size - 2)) {
+												.get(q.totalSize - 2)) {
 											turnRight(s);
 											break;
 										}
@@ -583,13 +583,13 @@ public class World {
 									for (SnakePart sp : q.snakeParts) {
 										if (s.x + s.yDirection == sp.x
 												&& s.y - s.xDirection == sp.y
-												&& s.size < q.size
+												&& s.totalSize < q.totalSize
 														- q.snakeParts
 																.indexOf(sp)) {
 											turnRight(s);
 											break;
 										} else if (sp == q.snakeParts
-												.get(q.size - 2)) {
+												.get(q.totalSize - 2)) {
 											turnLeft(s);
 											break;
 										}
@@ -641,7 +641,7 @@ public class World {
 
 			} else if (q == s) {
 				// Avoid self collission
-				for (int p = 3; p < q.size - 1; p++) {
+				for (int p = 3; p < q.totalSize - 1; p++) {
 					if ((s.x + s.xDirection == q.snakeParts.get(p).x && s.y == q.snakeParts
 							.get(p).y)
 							|| (s.y + s.yDirection == q.snakeParts.get(p).y && s.x == q.snakeParts
@@ -650,7 +650,7 @@ public class World {
 						switch (r) {
 						case 0:
 							turnRight(s);
-							for (int g = 2; g < q.size - 1; g++) {
+							for (int g = 2; g < q.totalSize - 1; g++) {
 								if ((s.x + s.xDirection == q.snakeParts.get(g).x && s.y == q.snakeParts
 										.get(g).y)
 										|| (s.y + s.yDirection == q.snakeParts
@@ -664,7 +664,7 @@ public class World {
 							break;
 						case 1:
 							turnLeft(s);
-							for (int g = 2; g < q.size - 1; g++) {
+							for (int g = 2; g < q.totalSize - 1; g++) {
 								if ((s.x + s.xDirection == q.snakeParts.get(g).x && s.y == q.snakeParts
 										.get(g).y)
 										|| (s.y + s.yDirection == q.snakeParts
@@ -685,7 +685,7 @@ public class World {
 	}
 
 	public void newAIDirection(Snake s) {
-		if (s.size > 0) {
+		if (s.totalSize > 0) {
 			int g = rand.nextInt(2);
 			switch (g) {
 			case 0:
@@ -766,7 +766,7 @@ public class World {
 		s.dead = false;
 		s.x = s.startingX;
 		s.y = s.startingY;
-		s.size = 3;
+		s.totalSize = 3;
 		s.deathTimer = 0;
 		s.lives--;
 	}
