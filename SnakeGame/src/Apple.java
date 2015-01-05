@@ -8,6 +8,8 @@ public class Apple extends Fruit{
 
 	Image apple = new ImageIcon("Cartoon Apple.png").getImage();
 	
+	private static int value = 3;
+	
 	public Apple(){
 		fruitType = "Apple";
 	}
@@ -21,4 +23,7 @@ public class Apple extends Fruit{
 		}
 	}
 	
+	public int getValue(){
+		return value;
+	}
 }

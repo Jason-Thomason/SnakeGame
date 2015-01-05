@@ -3,27 +3,25 @@ import java.awt.*;
 public class Obstacle {
 
 	private int x, y, width = 10, height = 10;
-	
-	
-	public void tick(){
-		
-	}
-	
-	public void render(Graphics g){
-		g.setColor(Color.PINK);
-		g.fill3DRect(x, y, width, height, true);
-	}
-	
-	public void checkCollisions(int x, int y){
+
+	public void tick() {
 
 	}
-	
-	public int getX(){
+
+	public void render(Graphics g) {
+
+	}
+
+	public void checkCollisions(Snake s) {
+
+	}
+
+	public int getX() {
 		return this.x;
 	}
-	
-	public int getY(){
+
+	public int getY() {
 		return this.y;
 	}
-		
+
 }

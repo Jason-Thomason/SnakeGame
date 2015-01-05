@@ -1,6 +1,8 @@
 /Apple.class
 /Background.class
 /Core.class
+/DeadSnakePart.class
+/Direction.class
 /FileHandler.class
 /Fruit.class
 /HUD.class
@@ -8,3 +10,11 @@
 /MapHandler.class
 /Obstacle.class
 /Orange.class
+/Snake$SnakeMode.class
+/Snake.class
+/SnakePart.class
+/Spike.class
+/Wall.class
+/Window.class
+/World$GameMode.class
+/World.class

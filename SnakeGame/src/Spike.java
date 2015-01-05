@@ -20,20 +20,12 @@ public class Spike extends Obstacle {
 		g.drawImage(spikeBall, this.x, this.y, null);
 	}
 
-	public void checkCollisions(int x, int y) {
-		if (this.x == x && this.y == y) {
-			for (int i = 0; i < World.snakes.size(); i++) {
-				if (World.snakes.get(i).snakeParts.size() > 1) {
-					if (this.x == World.snakes.get(i).snakeParts.get(0).getX()
-							&& this.y == World.snakes.get(i).snakeParts.get(0)
-									.getY()) {
-						for (int n = 0; n < 4; n++) {
-							if (World.snakes.get(i).snakeParts.size() > 1) {
-								World.snakes.get(i).removePart();
-							}
-						}
-					}
-				}
+	public void checkCollisions(Snake s) {
+		// Checks for collision
+		if (this.x == s.x && this.y == s.y) {
+			int z = (int) Math.floor(s.size / 2);
+			for (int n = 0; n < z; n++){
+				s.removePart();
 			}
 		}
 	}

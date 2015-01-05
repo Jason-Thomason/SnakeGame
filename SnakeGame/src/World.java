@@ -6,7 +6,14 @@ import java.util.Random;
 
 public class World {
 
-	public static int SCORE, HIGHSCORE, snakesLeft, level = 1, players = 2;
+	public static enum GameMode {
+		CLASSIC, BATTLE, TRON, TRON_INFINITE
+	}
+
+	public static GameMode gameMode = GameMode.BATTLE;
+
+	public static int SCORE, HIGHSCORE, snakesLeft, level = 3, players = 1,
+			totalSnakes, startingTotalSnakes = 4;
 	public static boolean snake1Moved, snake2Moved;
 
 	static ArrayList<Snake> snakes;
@@ -22,53 +29,80 @@ public class World {
 	MapHandler mh = new MapHandler();
 	Random rand = new Random();
 
-
 	public World() {
 		nextLevel();
+
 	}
 
 	public void tick() {
+		for (int s = 0; s < snakes.size(); s++) {
+			if (snakes.get(s).lives == 0 && snakes.get(s).dead) {
+				snakes.remove(s);
+				totalSnakes--;
+			}
+		}
 		// Keeps track of how many snakes are left
 		snakesLeft = 0;
 		for (Snake s : snakes) {
-			if (s.lives > 0 || !s.dead) {
-				snakesLeft++;
-				s.tick();
-				s.moved = false;
-			}
 			// Manges respawning
 			if (s.lives > 0 && s.dead) {
 				s.deathTimer++;
 				if (s.deathTimer == 50) {
-					s.respawn();
-					// Resets directions for player snakes
-					if (s == snakes.get(0)) {
-						HandlerClass.reset1();
-					} else if (s == snakes.get(1)) {
-						HandlerClass.reset2();
-					}
+					respawnSnake(s);
+					s.deathTimer = 0;
 
 				}
 			}
+			if (s.lives > 0 || !s.dead) {
+				snakesLeft++;
+				s.tick();
+				// Resets directions for player snakes
+				if (s == snakes.get(0)) {
+					HandlerClass.reset1();
+				} else if (s == snakes.get(1)) {
+					HandlerClass.reset2();
+				}
+
+			}
+			if (s.dead) {
+				while (s.snakeParts.size() > 0) {
+					// s.removePart();
+					s.snakeParts.remove(s.snakeParts.size() - 1);
+					s.size--;
+				}
+			}
+
+			// Handles AI Snakes
+			if (!s.human) {
+				switch (s.mode) {
+				case ROAM:
+					AIRoam(s);
+					break;
+				}
+			}
+			s.moved = false;
 
 		}
 		background.tick();
 		checkCollisions();
 
-		while (fruits.size() < Math.floor(Core.timer / 40) + 1) {
-			newFruit();
+		if (gameMode != GameMode.TRON_INFINITE) {
+			while (fruits.size() < Math.floor(Core.timer / 40) + 1) {
+				newFruit();
+			}
+			while (fruits.size() > Math.floor(Core.timer / 40) + 1) {
+				removeFruit();
+			}
 		}
-		while (fruits.size() > Math.floor(Core.timer / 40) + 1) {
-			removeFruit();
-		}
+
 		HUD.tick();
 		setDirection();
-		if (!Core.GAME_IS_RUNNING && players == 1) {
+		if (!Core.GAME_IS_RUNNING && gameMode == GameMode.CLASSIC) {
 			fileHandler.writeFile();
 			fileHandler.closeFile();
 		}
 		if (snakesLeft == 0) {
-			System.out.println("Out of snakes");
+			System.out.println("Ending due to lack of snakes left");
 			Core.GAME_IS_RUNNING = false;
 		}
 
@@ -85,7 +119,7 @@ public class World {
 			}
 		}
 		for (int i = 0; i < snakes.size(); i++) {
-			if (snakes.get(i).dead == false) {
+			if (snakes.get(i).dead == false && snakes.get(i).size > 0) {
 				snakes.get(i).render(g);
 			}
 		}
@@ -97,50 +131,41 @@ public class World {
 	}
 
 	public void setDirection() {
-		if (HandlerClass.upPressed) {
-			snakes.get(0).setYDirection(-10);
-			snakes.get(0).setXDirection(0);
+		if (snakes.size() > 0) {
+			/*
+			 * if (HandlerClass.upPressed) { snakes.get(0).direction =
+			 * snakes.get(0).direction.UP; } if (HandlerClass.downPressed) {
+			 * snakes.get(0).direction = snakes.get(0).direction.DOWN; } if
+			 * (HandlerClass.leftPressed) { snakes.get(0).direction =
+			 * snakes.get(0).direction.LEFT; } if (HandlerClass.rightPressed) {
+			 * snakes.get(0).direction = snakes.get(0).direction.RIGHT; } if
+			 * (!HandlerClass.upPressed && !HandlerClass.downPressed &&
+			 * !HandlerClass.leftPressed && !HandlerClass.rightPressed) {
+			 * snakes.get(0).direction = snakes.get(0).direction.NONE; }
+			 */
+
 		}
-		if (HandlerClass.downPressed) {
-			snakes.get(0).setYDirection(10);
-			snakes.get(0).setXDirection(0);
-		}
-		if (HandlerClass.leftPressed) {
-			snakes.get(0).setYDirection(0);
-			snakes.get(0).setXDirection(-10);
-		}
-		if (HandlerClass.rightPressed) {
-			snakes.get(0).setYDirection(0);
-			snakes.get(0).setXDirection(10);
-		}
-		if (!HandlerClass.upPressed && !HandlerClass.downPressed
-				&& !HandlerClass.leftPressed && !HandlerClass.rightPressed) {
-			snakes.get(0).setYDirection(0);
-			snakes.get(0).setXDirection(0);
-		}
-		if (players > 1 && snakes.get(1).human) {
-			if (HandlerClass.wPressed) {
-				snakes.get(1).setYDirection(-10);
-				snakes.get(1).setXDirection(0);
-			}
-			if (HandlerClass.sPressed) {
-				snakes.get(1).setYDirection(10);
-				snakes.get(1).setXDirection(0);
-			}
-			if (HandlerClass.aPressed) {
-				snakes.get(1).setYDirection(0);
-				snakes.get(1).setXDirection(-10);
-			}
-			if (HandlerClass.dPressed) {
-				snakes.get(1).setYDirection(0);
-				snakes.get(1).setXDirection(10);
-			}
-			if (!HandlerClass.wPressed && !HandlerClass.sPressed
-					&& !HandlerClass.aPressed && !HandlerClass.dPressed) {
-				snakes.get(1).setYDirection(0);
-				snakes.get(1).setXDirection(0);
+		if (snakes.size() > 1) {
+			if (snakes.get(1).human) {
+				if (HandlerClass.wPressed) {
+					snakes.get(1).direction = Direction.UP;
+				}
+				if (HandlerClass.sPressed) {
+					snakes.get(1).direction = Direction.DOWN;
+				}
+				if (HandlerClass.aPressed) {
+					snakes.get(1).direction = Direction.LEFT;
+				}
+				if (HandlerClass.dPressed) {
+					snakes.get(1).direction = Direction.RIGHT;
+				}
+				if (!HandlerClass.wPressed && !HandlerClass.sPressed
+						&& !HandlerClass.aPressed && !HandlerClass.dPressed) {
+					snakes.get(1).direction = Direction.NONE;
+				}
 			}
 		}
+
 	}
 
 	public void newFruit() {
@@ -179,90 +204,161 @@ public class World {
 	public void checkCollisions() {
 		for (int s = 0; s < snakes.size(); s++) {
 			// Check obstacles
-			for (Obstacle o : obstacles) {
+			for (int o = 0; o < obstacles.size(); o++) {
 				if (snakes.get(s).size > 0) {
-					o.checkCollisions(snakes.get(s).snakeParts.get(0).getX(),
-							snakes.get(s).snakeParts.get(0).getY());
+					obstacles.get(o).checkCollisions(snakes.get(s));
 				}
 			}
 			// Check fruit
 			for (int i = 0; i < fruits.size(); i++) {
 				if (snakes.get(s).size > 0) {
-					if (snakes.get(s).snakeParts.get(0).getX() == fruits.get(i).x
-							&& snakes.get(s).snakeParts.get(0).getY() == fruits
-									.get(i).y) {
-						if (fruits.get(i).fruitType.equals("Apple")) {
+					if (snakes.get(s).x == fruits.get(i).x
+							&& snakes.get(s).y == fruits.get(i).y) {
+						for (int k = 0; k < fruits.get(i).getValue(); k++) {
 							snakes.get(s).addPart(snakes.get(s).color);
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							fruits.get(i).spawned = false;
-							fruits.remove(i);
-							if (players == 1) {
-								SCORE += snakes.get(s).size;
-							}
-						} else if (fruits.get(i).fruitType.equals("Orange")) {
-							snakes.get(s).addPart(snakes.get(s).color);
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							fruits.get(i).spawned = false;
-							fruits.remove(i);
-							if (players == 1) {
-								SCORE += snakes.get(s).size;
-							}
+						}
+						fruits.get(i).spawned = false;
+						fruits.remove(i);
+						if (gameMode == GameMode.CLASSIC) {
+							SCORE += snakes.get(s).size;
 						}
 					}
 				}
 			}
 			// Check collisions between snakes in triple loop (Snake s vs
 			// Snake q at Snake q's part p)
-			if (players > 1) {
-				for (int q = 0; q < snakes.size(); q++) {
-					if (q != s) {
-						for (int p = 0; p < snakes.get(q).size; p++) {
-							if (snakes.get(s).size > 0) {
-								if (snakes.get(s).snakeParts.get(0).getX() == snakes
-										.get(q).snakeParts.get(p).getX()
-										&& snakes.get(s).snakeParts.get(0)
-												.getY() == snakes.get(q).snakeParts
-												.get(p).getY()) {
+			for (int q = 0; q < snakes.size(); q++) {
+				if (q != s) {
+					// Check head on collisions
+					if (snakes.get(s).x == snakes.get(q).x
+							&& snakes.get(s).y == snakes.get(q).y) {
+						if (gameMode == GameMode.BATTLE) {
+							if (snakes.get(s).size < snakes.get(q).size) {
+								int z = snakes.get(s).size;
+								for (int n = 0; n < z; n++) {
+									snakes.get(q).addPart(snakes.get(s).color);
+									snakes.get(s).removePart();
+								}
+							} else if (snakes.get(s).size > snakes.get(q).size) {
+								int z = snakes.get(q).size;
+								for (int n = 0; n < z; n++) {
+									snakes.get(s).addPart(snakes.get(q).color);
+									snakes.get(q).removePart();
+								}
+							} else if (snakes.get(s).size == snakes.get(q).size - 1) {
+								int z = snakes.get(s).size - 0;
+								for (int n = 0; n < z; n++) {
+									snakes.get(s).removePart();
+									snakes.get(q).removePart();
+								}
+							}
+						} else {
+							for (SnakePart sp : snakes.get(s).snakeParts) {
+								obstacles.add(new DeadSnakePart(sp));
+							}
+							snakes.get(s).dead = true;
+							for (SnakePart sp : snakes.get(q).snakeParts) {
+								obstacles.add(new DeadSnakePart(sp));
+							}
+							snakes.get(q).dead = true;
+						}
+
+					}// Checks "glitched" head on collision
+					if (snakes.get(s).size > 1 && snakes.get(q).size > 1) {
+						if (snakes.get(s).x == snakes.get(q).snakeParts.get(0).x
+								&& snakes.get(s).y == snakes.get(q).snakeParts
+										.get(0).y
+								&& snakes.get(q).x == snakes.get(s).snakeParts
+										.get(0).x
+								&& snakes.get(q).y == snakes.get(s).snakeParts
+										.get(0).y) {
+							if (gameMode == GameMode.BATTLE) {
+								if (snakes.get(s).size < snakes.get(q).size) {
+									int z = snakes.get(s).size;
+									for (int n = 0; n < z; n++) {
+										snakes.get(q).addPart(
+												snakes.get(s).color);
+										snakes.get(s).removePart();
+									}
+								} else if (snakes.get(s).size > snakes.get(q).size) {
+									int z = snakes.get(q).size;
+									for (int n = 0; n < z; n++) {
+										snakes.get(s).addPart(
+												snakes.get(q).color);
+										snakes.get(q).removePart();
+									}
+								} else if (snakes.get(s).size == snakes.get(q).size) {
+									int z = snakes.get(s).size - 1;
+									for (int n = 0; n < z; n++) {
+										snakes.get(s).removePart();
+										snakes.get(q).removePart();
+									}
+								}
+							} else {
+
+								for (SnakePart sp : snakes.get(s).snakeParts) {
+									obstacles.add(new DeadSnakePart(sp));
+								}
+								snakes.get(s).dead = true;
+								for (SnakePart sp : snakes.get(q).snakeParts) {
+									obstacles.add(new DeadSnakePart(sp));
+								}
+								snakes.get(q).dead = true;
+							}
+
+						}
+					}
+					for (int p = 0; p < snakes.get(q).size - 1; p++) {
+						if (snakes.get(s).size > 0) {
+							if (snakes.get(s).x == snakes.get(q).snakeParts
+									.get(p).x
+									&& snakes.get(s).y == snakes.get(q).snakeParts
+											.get(p).y) {
+								if (gameMode == GameMode.BATTLE) {
 									if (snakes.get(s).size > snakes.get(q).size
 											- p) {
-										for (int n = 0; n < snakes.get(q).size
-												- p; n++) {
-											snakes.get(s).addPart(snakes.get(q).snakeParts.get(p).color);
-											snakes.get(q).removePart(); 
+										int z = snakes.get(q).snakeParts.size()
+												- p;
+										for (int n = 0; n < z; n++) {
+											snakes.get(s).addPart(
+													snakes.get(q).snakeParts
+															.get(p).color);
+											snakes.get(q).removePart();
 										}
-										// If snake s is bigger than snake
+										// If snake s is smaller than snake
 										// q's
 										// tail at point of collision...
 									} else if (snakes.get(s).size < snakes
-											.get(q).size - p) {
-										if (snakes.get(s).size == 1) {
+											.get(q).snakeParts.size() - p) {
+										int z = snakes.get(q).size;
+										for (int u = 0; u < z; u++) {
 											snakes.get(s).removePart();
-										} else {
-											for (int u = 0; u < Math
-													.floor(snakes.get(s).size / 2); u++) {
-												snakes.get(s).removePart();
-											}
 										}
 									}
+								} else {
+									for (SnakePart sp : snakes.get(s).snakeParts) {
+										obstacles.add(new DeadSnakePart(sp));
+									}
+									snakes.get(s).dead = true;
 								}
 							}
+
 						}
 					}
 				}
 			}
 			// Checks for self collision of snake s at part p
-			for (int p = 1; p < snakes.get(s).size; p++) {
-				if (snakes.get(s).snakeParts.get(0).getX() == snakes.get(s).snakeParts
-						.get(p).getX()
-						&& snakes.get(s).snakeParts.get(0).getY() == snakes
-								.get(s).snakeParts.get(p).getY()) {
-					for (int n = 0; n < snakes.get(s).size - p; n++) {
-						if (players == 1 && p > 2) {
+			for (int p = 2; p < snakes.get(s).snakeParts.size() - 1; p++) {
+				if (snakes.get(s).x == snakes.get(s).snakeParts.get(p).x
+						&& snakes.get(s).y == snakes.get(s).snakeParts.get(p).y) {
+					// Declare the length of the tail before loop so it only
+					// checks once
+					int z = snakes.get(s).size - p;
+					for (int n = 0; n < z; n++) {
+						if (gameMode != GameMode.BATTLE) {
+							for (SnakePart sp : snakes.get(s).snakeParts) {
+								obstacles.add(new DeadSnakePart(sp));
+							}
 							snakes.get(s).dead = true;
 						} else {
 							snakes.get(s).removePart();
@@ -278,7 +374,6 @@ public class World {
 		Core.timer = 0;
 		try {
 			mh.loadMap("Map" + level + ".txt");
-			System.out.println("Map " + level + " loaded");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -286,17 +381,357 @@ public class World {
 		fileHandler.openFile();
 		fileHandler.readFile();
 
+		// Resets map
+		for (int o = 0; o < obstacles.size() - 1; o++) {
+			if (obstacles.get(o).getClass() == DeadSnakePart.class) {
+				obstacles.remove(o);
+				o--;
+			}
+		}
+
+		totalSnakes = startingTotalSnakes;
+
 		// Resets ArrayList snakes and fills it
 		snakes = new ArrayList<Snake>();
-		for (int i = 0; i < players; i++) {
+		for (int i = 0; i < totalSnakes; i++) {
 			snakes.add(new Snake(colors[i], startingPositions[i][0],
 					startingPositions[i][1]));
-			//Sets first and second snake to human.
-			if(i <= 1){
+			// Sets as many snakes human as there are players
+			if (i < players) {
 				snakes.get(i).human = true;
+			} else if (i >= players) {
+				// Gives random direction for AI Snakes
+				int d = rand.nextInt(4);
+				switch (d) {
+				case 0:
+					snakes.get(i).direction = snakes.get(i).direction.LEFT;
+					snakes.get(i).xDirection = -10;
+					snakes.get(i).yDirection = 0;
+					break;
+				case 1:
+					snakes.get(i).direction = snakes.get(i).direction.UP;
+					snakes.get(i).xDirection = 0;
+					snakes.get(i).yDirection = -10;
+					break;
+				case 2:
+					snakes.get(i).direction = snakes.get(i).direction.DOWN;
+					snakes.get(i).xDirection = 0;
+					snakes.get(i).yDirection = 10;
+					break;
+				case 3:
+					snakes.get(i).direction = snakes.get(i).direction.RIGHT;
+					snakes.get(i).xDirection = 10;
+					snakes.get(i).yDirection = 0;
+					break;
+				}
+				newAIDirection(snakes.get(i));
 			}
 		}
 		newFruit();
+	}
+
+	public void AIRoam(Snake s) {
+		if (s.AITick == 0) {
+			int r = rand.nextInt(20);
+			if (r == 0) {
+				newAIDirection(s);
+				// s.moved = true;
+				s.AITick++;
+			}
+		} else if (s.AITick == s.AITickMax) {
+			s.AITick = 0;
+		} else {
+			s.AITick++;
+		}
+		AICheckAround(s);
+	}
+
+	public void AICheckAround(Snake s) {
+		// Checks in front for obstacles
+		for (Obstacle o : obstacles) {
+			// Checks in front for obstacle
+			if (s.size > 0) {
+
+				if ((s.x + s.xDirection == o.getX() && s.y + s.yDirection == o
+						.getY())) {
+					int r = rand.nextInt(2);
+					switch (r) {
+					case 0:
+						// Checks to right before turning
+						for (Obstacle b : obstacles) {
+							if ((s.x - (s.yDirection) == b.getX())
+									&& ((s.y + (s.xDirection) == b.getY()))) {
+								turnLeft(s);
+								s.AITick = 1;
+								break;
+							} else if (obstacles.indexOf(b) == obstacles.size() - 1) {
+								turnRight(s);
+								s.AITick = 1;
+								break;
+							}
+						}
+						break;
+					case 1:
+						// Checks to left before turning
+						for (Obstacle b : obstacles) {
+							if ((s.x + (s.yDirection) == b.getX())
+									&& (s.y - (s.xDirection) == b.getY())) {
+								turnRight(s);
+								s.AITick = 1;
+								break;
+							} else if (obstacles.indexOf(b) == obstacles.size() - 1) {
+								turnLeft(s);
+								s.AITick = 1;
+								break;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		for (Fruit f : fruits) {
+			// Checks all spaces around it up to a distance of (6)
+			s.xDirection = s.getXDirection();
+			s.yDirection = s.getYDirection();
+			for (int i = 1; i <= 6; i++) {
+				if ((s.x + (s.xDirection * i) == f.x && s.y == f.y)
+						|| (s.y + (s.yDirection * i) == f.y && s.x == f.x)) {
+					s.AITick = s.AITickMax - i - 1;
+				}
+				if ((s.x + (s.yDirection * i) == f.x && s.y == f.y)
+						|| (s.y - (s.xDirection * i) == f.y && s.x == f.x)) {
+					turnLeft(s);
+					s.AITick = s.AITickMax - i - 1;
+				}
+				if ((s.x - (s.yDirection * i) == f.x && s.y == f.y)
+						|| (s.y + (s.xDirection * i) == f.y && s.x == f.x)) {
+					turnRight(s);
+					s.AITick = s.AITickMax - i - 1;
+				} else {
+					continue;
+				}
+			}
+		}
+		for (Snake q : snakes) {
+			if (q != s) {
+				for (int p = 0; p < q.size - 1; p++) {
+					if (gameMode == GameMode.BATTLE) {
+						// Dodges other snake if it will die
+						if (s.size < q.size - p) {
+							if ((s.x + s.xDirection == q.snakeParts.get(p).x && s.y
+									+ s.yDirection == q.snakeParts.get(p).y)) {
+								int r = rand.nextInt(2);
+								switch (r) {
+								case 0:
+									// Tries to turn right
+									for (SnakePart sp : q.snakeParts) {
+										if (s.x - s.yDirection == sp.x
+												&& s.y + s.xDirection == sp.y
+												&& s.size < q.size
+														- q.snakeParts
+																.indexOf(sp)) {
+											turnLeft(s);
+											break;
+										} else if (sp == q.snakeParts
+												.get(q.size - 2)) {
+											turnRight(s);
+											break;
+										}
+									}
+									s.AITick = 1;
+									break;
+								case 1:
+									// Tries to turn left
+									for (SnakePart sp : q.snakeParts) {
+										if (s.x + s.yDirection == sp.x
+												&& s.y - s.xDirection == sp.y
+												&& s.size < q.size
+														- q.snakeParts
+																.indexOf(sp)) {
+											turnRight(s);
+											break;
+										} else if (sp == q.snakeParts
+												.get(q.size - 2)) {
+											turnLeft(s);
+											break;
+										}
+									}
+									s.AITick = 1;
+									break;
+								}
+							}
+
+						}
+					} else {
+						if ((s.x + s.xDirection == q.snakeParts.get(p).x && s.y
+								+ s.yDirection == q.snakeParts.get(p).y)) {
+							int r = rand.nextInt(2);
+							switch (r) {
+							case 0:
+								// Tries to turn right
+								for (SnakePart sp : q.snakeParts) {
+									if (s.x - s.yDirection == sp.x
+											&& s.y + s.xDirection == sp.y) {
+										turnLeft(s);
+										break;
+									} else {
+										turnRight(s);
+										break;
+									}
+								}
+								s.AITick = 1;
+								break;
+							case 1:
+								// Tries to turn left
+								for (SnakePart sp : q.snakeParts) {
+									if (s.x + s.yDirection == sp.x
+											&& s.y - s.xDirection == sp.y) {
+										turnRight(s);
+										break;
+									} else {
+										turnLeft(s);
+										break;
+									}
+								}
+								s.AITick = 1;
+								break;
+							}
+						}
+
+					}
+				}
+
+			} else if (q == s) {
+				// Avoid self collission
+				for (int p = 3; p < q.size - 1; p++) {
+					if ((s.x + s.xDirection == q.snakeParts.get(p).x && s.y == q.snakeParts
+							.get(p).y)
+							|| (s.y + s.yDirection == q.snakeParts.get(p).y && s.x == q.snakeParts
+									.get(p).x)) {
+						int r = rand.nextInt(2);
+						switch (r) {
+						case 0:
+							turnRight(s);
+							for (int g = 2; g < q.size - 1; g++) {
+								if ((s.x + s.xDirection == q.snakeParts.get(g).x && s.y == q.snakeParts
+										.get(g).y)
+										|| (s.y + s.yDirection == q.snakeParts
+												.get(g).y && s.x == q.snakeParts
+												.get(g).x)) {
+									turnLeft(s);
+									turnLeft(s);
+									s.AITick = 1;
+								}
+							}
+							break;
+						case 1:
+							turnLeft(s);
+							for (int g = 2; g < q.size - 1; g++) {
+								if ((s.x + s.xDirection == q.snakeParts.get(g).x && s.y == q.snakeParts
+										.get(g).y)
+										|| (s.y + s.yDirection == q.snakeParts
+												.get(g).y && s.x == q.snakeParts
+												.get(g).x)) {
+									turnRight(s);
+									turnRight(s);
+									s.AITick = 1;
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	public void newAIDirection(Snake s) {
+		if (s.size > 0) {
+			int g = rand.nextInt(2);
+			switch (g) {
+			case 0:
+				// Checks to right before turning
+				for (Obstacle b : obstacles) {
+					if ((s.x - (s.yDirection) == b.getX())
+							&& ((s.y + (s.xDirection) == b.getY()))) {
+						turnLeft(s);
+						s.AITick = 0;
+						break;
+					} else if (obstacles.indexOf(b) == obstacles.size() - 1) {
+						turnRight(s);
+						s.AITick = 0;
+						break;
+					}
+				}
+				break;
+			case 1:
+				// Checks to left before turning
+				for (Obstacle b : obstacles) {
+					if ((s.x + (s.yDirection) == b.getX())
+							&& (s.y - (s.xDirection) == b.getY())) {
+						turnRight(s);
+						s.AITick = 1;
+						break;
+					} else if (obstacles.indexOf(b) == obstacles.size() - 1) {
+						turnLeft(s);
+						s.AITick = 1;
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	public static void turnRight(Snake s) {
+		switch (s.direction) {
+		case UP:
+			s.direction = Direction.RIGHT;
+			break;
+		case NONE:
+			s.direction = Direction.RIGHT;
+			break;
+		case DOWN:
+			s.direction = Direction.LEFT;
+			break;
+		case LEFT:
+			s.direction = Direction.UP;
+			break;
+		case RIGHT:
+			s.direction = Direction.DOWN;
+			break;
+		}
+	}
+
+	public static void turnLeft(Snake s) {
+		switch (s.direction) {
+		case UP:
+			s.direction = Direction.LEFT;
+			break;
+		case NONE:
+			s.direction = Direction.LEFT;
+			break;
+		case DOWN:
+			s.direction = Direction.RIGHT;
+			break;
+		case LEFT:
+			s.direction = Direction.DOWN;
+			break;
+		case RIGHT:
+			s.direction = Direction.UP;
+			break;
+		}
+	}
+
+	public void respawnSnake(Snake s) {
+		s.dead = false;
+		s.x = s.startingX;
+		s.y = s.startingY;
+		s.size = 3;
+		s.deathTimer = 0;
+		s.lives--;
 	}
 
 }
