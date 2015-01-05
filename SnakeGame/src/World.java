@@ -22,7 +22,6 @@ public class World {
 	MapHandler mh = new MapHandler();
 	Random rand = new Random();
 
-
 	public World() {
 		nextLevel();
 	}
@@ -178,40 +177,41 @@ public class World {
 
 	public void checkCollisions() {
 		for (int s = 0; s < snakes.size(); s++) {
+			Snake snakeBeingChecked1 = snakes.get(s);
 			// Check obstacles
 			for (Obstacle o : obstacles) {
-				if (snakes.get(s).size > 0) {
-					o.checkCollisions(snakes.get(s).snakeParts.get(0).getX(),
-							snakes.get(s).snakeParts.get(0).getY());
+				if (snakeBeingChecked1.size > 0) {
+					o.checkCollisions(snakeBeingChecked1.snakeParts.get(0)
+							.getX(), snakeBeingChecked1.snakeParts.get(0)
+							.getY());
 				}
 			}
 			// Check fruit
 			for (int i = 0; i < fruits.size(); i++) {
-				if (snakes.get(s).size > 0) {
-					if (snakes.get(s).snakeParts.get(0).getX() == fruits.get(i).x
-							&& snakes.get(s).snakeParts.get(0).getY() == fruits
-									.get(i).y) {
-						if (fruits.get(i).fruitType.equals("Apple")) {
-							snakes.get(s).addPart(snakes.get(s).color);
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							fruits.get(i).spawned = false;
-							fruits.remove(i);
-							if (players == 1) {
-								SCORE += snakes.get(s).size;
-							}
-						} else if (fruits.get(i).fruitType.equals("Orange")) {
-							snakes.get(s).addPart(snakes.get(s).color);
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							snakes.get(s).addPart();
-							fruits.get(i).spawned = false;
-							fruits.remove(i);
-							if (players == 1) {
-								SCORE += snakes.get(s).size;
-							}
+				if (snakeBeingChecked1.snakeParts.get(0).getX() == fruits
+						.get(i).x
+						&& snakeBeingChecked1.snakeParts.get(0).getY() == fruits
+								.get(i).y) {
+					if (fruits.get(i).fruitType.equals("Apple")) {
+						snakeBeingChecked1.addPart(snakeBeingChecked1.color);
+						snakeBeingChecked1.addPart();
+						snakeBeingChecked1.addPart();
+						fruits.get(i).spawned = false;
+						fruits.remove(i);
+						if (players == 1) {
+							SCORE += snakeBeingChecked1.size;
+						}
+					} else if (fruits.get(i).fruitType.equals("Orange")) {
+						snakeBeingChecked1.addPart(snakeBeingChecked1.color);
+						snakeBeingChecked1.addPart();
+						snakeBeingChecked1.addPart();
+						snakeBeingChecked1.addPart();
+						snakeBeingChecked1.addPart();
+						snakeBeingChecked1.addPart();
+						fruits.get(i).spawned = false;
+						fruits.remove(i);
+						if (players == 1) {
+							SCORE += snakeBeingChecked1.size;
 						}
 					}
 				}
@@ -220,32 +220,35 @@ public class World {
 			// Snake q at Snake q's part p)
 			if (players > 1) {
 				for (int q = 0; q < snakes.size(); q++) {
-					if (q != s) {
-						for (int p = 0; p < snakes.get(q).size; p++) {
-							if (snakes.get(s).size > 0) {
-								if (snakes.get(s).snakeParts.get(0).getX() == snakes
-										.get(q).snakeParts.get(p).getX()
-										&& snakes.get(s).snakeParts.get(0)
-												.getY() == snakes.get(q).snakeParts
+					Snake snakeBeingChecked2 = snakes.get(q);
+					if (snakeBeingChecked1 != snakeBeingChecked2) {
+						for (int p = 0; p < snakeBeingChecked2.size; p++) {
+							if (snakeBeingChecked1.size > 0) {
+								if (snakeBeingChecked1.snakeParts.get(0).getX() == snakeBeingChecked2.snakeParts
+										.get(p).getX()
+										&& snakeBeingChecked1.snakeParts.get(0)
+												.getY() == snakeBeingChecked2.snakeParts
 												.get(p).getY()) {
-									if (snakes.get(s).size > snakes.get(q).size
+									int snake2Tail = snakeBeingChecked2.size
+											- p;
+									if (snakeBeingChecked1.size > snakeBeingChecked2.size
 											- p) {
-										for (int n = 0; n < snakes.get(q).size
-												- p; n++) {
-											snakes.get(s).addPart(snakes.get(q).snakeParts.get(p).color);
-											snakes.get(q).removePart(); 
+										for (int n = 0; n < snake2Tail; n++) {
+											snakeBeingChecked1
+													.addPart(snakeBeingChecked2.snakeParts
+															.get(p).color);
+											snakeBeingChecked2.removePart();
 										}
 										// If snake s is bigger than snake
 										// q's
 										// tail at point of collision...
-									} else if (snakes.get(s).size < snakes
-											.get(q).size - p) {
-										if (snakes.get(s).size == 1) {
-											snakes.get(s).removePart();
+									} else if (snakeBeingChecked1.size < snake2Tail) {
+										if (snakeBeingChecked1.size == 1) {
+											snakeBeingChecked1.removePart();
 										} else {
-											for (int u = 0; u < Math
-													.floor(snakes.get(s).size / 2); u++) {
-												snakes.get(s).removePart();
+											int partsToRemove = snakeBeingChecked1.size - 1;
+											for (int u = 0; u < partsToRemove; u++) {
+												snakeBeingChecked1.removePart();
 											}
 										}
 									}
@@ -256,16 +259,18 @@ public class World {
 				}
 			}
 			// Checks for self collision of snake s at part p
-			for (int p = 1; p < snakes.get(s).size; p++) {
-				if (snakes.get(s).snakeParts.get(0).getX() == snakes.get(s).snakeParts
+			for (int p = 3; p < snakeBeingChecked1.size; p++) {
+				if (snakeBeingChecked1.snakeParts.get(0).getX() == snakeBeingChecked1.snakeParts
 						.get(p).getX()
-						&& snakes.get(s).snakeParts.get(0).getY() == snakes
+						&& snakeBeingChecked1.snakeParts.get(0).getY() == snakes
 								.get(s).snakeParts.get(p).getY()) {
-					for (int n = 0; n < snakes.get(s).size - p; n++) {
-						if (players == 1 && p > 2) {
-							snakes.get(s).dead = true;
-						} else {
-							snakes.get(s).removePart();
+
+					if (players == 1) {
+						snakeBeingChecked1.dead = true;
+					} else {
+						int partsToRemove = snakeBeingChecked1.size - p;
+						for (int n = 0; n < partsToRemove; n++) {
+							snakeBeingChecked1.removePart();
 						}
 					}
 				}
@@ -291,8 +296,8 @@ public class World {
 		for (int i = 0; i < players; i++) {
 			snakes.add(new Snake(colors[i], startingPositions[i][0],
 					startingPositions[i][1]));
-			//Sets first and second snake to human.
-			if(i <= 1){
+			// Sets first and second snake to human.
+			if (i <= 1) {
 				snakes.get(i).human = true;
 			}
 		}
